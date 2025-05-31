@@ -1,0 +1,27 @@
+{
+  "editor.fontFamily": "'DejaVu Sans Mono', 'Monospace', monospace",
+  "editor.fontLigatures": true,
+  "prisma-smart-formatter.typescript.defaultFormatter": "esbenp.prettier-vscode",
+  "prisma-smart-formatter.typescriptreact.defaultFormatter": "svipas.prettier-plus",
+  "prisma-smart-formatter.prisma.defaultFormatter": "Prisma.prisma",
+  "cSpell.words": [
+    "checkcircle",
+    "Entypo",
+    "flatrate",
+    "hintrc",
+    "infocirlceo",
+    "lightgreen",
+    "mobileprovision",
+    "moti",
+    "mylist",
+    "poweroff",
+    "TMDB",
+    "watchme",
+    "Watchtime"
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit",
+    "source.sortMembers": "explicit"
+  }
+}

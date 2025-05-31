@@ -1,0 +1,101 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Movie List</title>
+</head>
+
+<body>
+  <h1>List of Movies</h1>
+  <a href="/">Go to Dashboard</a>
+  <form class="search-container" action="/fetch-movie" method="POST">
+    <input style="margin-right: 5px; padding: 8px; width:200px" type="text" id="searchTerm" name="searchTerm"
+      placeholder="Movie Name" required />
+    <button class="submit-btn" type="submit">Fetch Details</button>
+  </form>
+
+  {{#each movieList}}
+
+  <div class="movieDetailsContainer">
+    <div class="posterContainer">
+      <img src="https://image.tmdb.org/t/p/original/{{this.poster_path}}" alt="Movie Poster" />
+    </div>
+
+    <div class="detailsTextContainer">
+      <a href="/addMovie/{{this.id}}">
+        <h2>{{this.title}}</h2>
+      </a>
+      <p style="font-size: 0.8rem; margin-bottom:5px;">{{this.overview}}</p>
+      <p style="font-size: 0.8rem; font-weight: bold">Release Date:
+        {{this.release_date}}</p>
+    </div>
+  </div>
+
+  {{/each}}
+</body>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400&display=swap');
+
+  body {
+    font-family: 'Poppins', sans-serif;
+  }
+
+  h1 {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .search-container {
+    display: flex;
+    justify-content:
+      center;
+    margin-bottom: 10px;
+  }
+
+  .submit-btn {
+    padding: 10px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .movieDetailsContainer {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    width: 50%;
+    margin: 0 auto;
+  }
+
+  .posterContainer {
+    margin-right: 20px;
+  }
+
+  .posterContainer img {
+    width: 100px;
+    height: auto;
+  }
+
+  .detailsTextContainer {
+    text-align: left;
+  }
+
+  .detailsTextContainer h2 {
+    margin-bottom: 10px;
+  }
+
+  .detailsTextContainer p {
+    margin: 0;
+  }
+
+  a {
+    text-decoration: none;
+    color: black;
+  }
+</style>
+
+</html>
