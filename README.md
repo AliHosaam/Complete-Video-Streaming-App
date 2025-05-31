@@ -42,23 +42,23 @@ Key Features:
 * Resume playback from last watched position
 * Show ongoing watched content on the history screen
 
-#### 16. **Performance Optimization**
+#### 9. **Performance Optimization**
 
 * Lazy loading images and components
 * Caching content using local storage
 * Optimized for both Android and iOS devices
 
-#### 17. **Backend Integration**
+#### 10. **Backend Integration**
 
 * REST API integration
 * Node.js for data handling
 
-#### 18. **Analytics & Crash Reporting**
+#### 11. **Analytics & Crash Reporting**
 
 * Track user engagement (Firebase Analytics or Amplitude)
 * Error logging and crash analytics (Sentry or Crashlytics)
 
-#### 20. **Admin Panel**
+#### 12. **Admin Panel**
 
 * Manage content and categories
 * View analytics and performance data
