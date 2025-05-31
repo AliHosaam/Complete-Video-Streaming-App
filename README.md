@@ -123,5 +123,9 @@ Techs Used:
   * `dotenv`: `^16.4.7` – Loads environment variables from `.env` file securely.
   * `nodemon`: `^3.1.3` – Auto-restarts the server during development.
 
+Screenshots:
 
+   ![Image](https://github.com/user-attachments/assets/6d4e4eca-923c-4886-a444-276e2588de57)
+   ![Image](https://github.com/user-attachments/assets/af8ef7c9-6f4b-4bee-a93e-7a5bbab67b15)
+   ![Image](https://github.com/user-attachments/assets/48602846-85e6-4d5b-ae26-fb1bbb2ce15b)
 
