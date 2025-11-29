@@ -30,6 +30,16 @@ export default function RelatedMovies({ movieId }) {
     fetchSimilarMovies();
   }, [movieId]);
 
+  const shuffleArray = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  };
+
+  const shuffledRelatedMovies = shuffleArray(relatedMovies);
+
   const handleMovieDetails = (movie) => {
     navigation.push("MoviesDetailsScreen", {
       movie: movie,
@@ -85,7 +95,7 @@ export default function RelatedMovies({ movieId }) {
       <Text style={styles.relatedMoviesText}>Related</Text>
 
       <FlatList
-        data={relatedMovies.slice(0, 10)}
+        data={shuffledRelatedMovies.slice(0, 10)}
         keyExtractor={(item) => item._id}
         renderItem={renderSimilarMovies}
         windowSize={2}

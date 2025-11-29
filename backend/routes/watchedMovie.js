@@ -107,13 +107,11 @@ router.get("/watched-movies", isLoggedIn, async (req, res) => {
   try {
     const user = req.user;
     const watchedMovies = await Promise.all(
-      user.watchedMovies.map(async ({ movie, watchedTime, uploadTime }) => {
+      user.watchedMovies.map(async ({ movie }) => {
         const movieDetails = await Movie.findById(movie);
 
         return {
           movie: movieDetails,
-          watchedTime: watchedTime,
-          uploadTime: uploadTime,
         };
       })
     );

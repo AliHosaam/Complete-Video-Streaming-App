@@ -1,0 +1,75 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit TV Show List</title>
+</head>
+
+<body>
+  <h1>Edit TV Show List</h1>
+  <a href="/">Go to Dashboard</a>
+  {{#each shows}}
+  <div class="showsDetailsContainer">
+    <div class="posterContainer">
+      <img src="https://image.tmdb.org/t/p/original/{{this.posterPath}}" alt="Show Poster" />
+    </div>
+    <div class="detailsTextContainer">
+      <a href="/shows/{{_id}}">
+        <h2>{{this.name}}</h2>
+      </a>
+      <p style="font-size: 0.8rem; margin-bottom: 5px;">{{this.overview}}</p>
+      <p style="font-size: 0.8rem; font-weight: bold;">Release Date:
+        {{this.releaseDate}}</p>
+    </div>
+  </div>
+  {{/each}}
+</body>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400&display=swap');
+
+  body {
+    font-family: 'Poppins', sans-serif;
+  }
+
+  h1 {
+    text-align: center;
+  }
+
+  .showsDetailsContainer {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    width: 50%;
+    margin: 0 auto;
+  }
+
+  .posterContainer {
+    margin-right: 20px;
+  }
+
+  .posterContainer img {
+    width: 100px;
+    height: auto;
+  }
+
+  .detailsTextContainer {
+    text-align: left;
+  }
+
+  .detailsTextContainer h2 {
+    margin-bottom: 10px;
+  }
+
+  .detailsTextContainer p {
+    margin: 0;
+  }
+
+  a {
+    text-decoration: none;
+    color:
+      black;
+  }
+</style>
+
+</html>

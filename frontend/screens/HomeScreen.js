@@ -10,6 +10,7 @@ import { useNavigation } from "@react-navigation/native";
 
 export default function HomeScreen({ route }) {
   const navigation = useNavigation();
+
   const [moviesList, setMoviesList] = useState([]);
   const [myList, setMyList] = useState(route.params.mylist);
   const [isLoading, setIsLoading] = useState(true);
@@ -31,7 +32,11 @@ export default function HomeScreen({ route }) {
     };
 
     updateMyList();
-  }, [route.params.mylist]);
+  }, []);
+
+  const updateMylist = (newList) => {
+    setMyList(newList);
+  };
 
   const handleBanner = (movie) => {
     navigation.navigate("MoviesDetailsScreen", {
@@ -39,10 +44,11 @@ export default function HomeScreen({ route }) {
     });
   };
 
-  const posterPlayButton = (movieId, movieLink) => {
+  const posterPlayButton = (movieId, movieLink, movieName) => {
     navigation.navigate("MoviesVideoPlayer", {
       movieId: movieId,
       movieLink: movieLink,
+      movieName: movieName,
     });
   };
 
@@ -59,7 +65,6 @@ export default function HomeScreen({ route }) {
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={styles.scrollView}
-        bounces={false}
       >
         <MovieBanner
           moviesList={moviesList}
@@ -67,6 +72,7 @@ export default function HomeScreen({ route }) {
           handleBanner={handleBanner}
           posterPlayButton={posterPlayButton}
           posterInfoButton={posterInfoButton}
+          updateMylist={updateMylist}
           isLoading={isLoading}
         />
 

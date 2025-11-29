@@ -7,6 +7,10 @@ import MoviesVideoPlayer from "../screens/MoviesVideoPlayer";
 import MoviesDetailsScreen from "../screens/MoviesDetailsScreen";
 import HistoryScreen from "../screens/HistoryScreen";
 import SplashScreen from "../screens/SplashScreen";
+import ShowsTabNavigator from "./ShowsTabNav";
+import ShowsDetailsScreen from "../screens/ShowsDetailsScreen";
+import ShowsVideoPlayer from "../screens/ShowsVideoPlayer";
+import ShowsHistoryScreen from "../screens/ShowsHistoryScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -31,7 +35,11 @@ export default function AppNavigation() {
           name="BottomTabNavigator"
           component={BottomTabNavigator}
         />
-        <Stack.Screen name="MoviesVideoPlayer" component={MoviesVideoPlayer} />
+        <Stack.Screen
+          name="MoviesVideoPlayer"
+          component={MoviesVideoPlayer}
+          options={{ gestureEnabled: false }}
+        />
         <Stack.Screen
           name="MoviesDetailsScreen"
           component={MoviesDetailsScreen}
@@ -41,6 +49,27 @@ export default function AppNavigation() {
           name="SplashScreen"
           component={SplashScreen}
           options={{ animation: "fade" }}
+        />
+        <Stack.Screen
+          name="ShowsTabNavigator"
+          component={ShowsTabNavigator}
+          options={{
+            animation: "slide_from_bottom",
+            gestureEnabled: false,
+          }}
+        />
+        <Stack.Screen
+          name="ShowsDetailsScreen"
+          component={ShowsDetailsScreen}
+        />
+        <Stack.Screen
+          name="ShowsVideoPlayer"
+          component={ShowsVideoPlayer}
+          options={{ gestureEnabled: false }}
+        />
+        <Stack.Screen
+          name="ShowsHistoryScreen"
+          component={ShowsHistoryScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>

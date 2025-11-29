@@ -25,10 +25,32 @@ export default function MovieBanner({
   handleBanner,
   posterPlayButton,
   posterInfoButton,
+  updateMylist,
   isLoading,
 }) {
   const navigation = useNavigation();
   const [userMyList, setUserMyList] = useState(mylist);
+
+  const moveToShowsScreen = () => {
+    navigation.navigate("ShowsTabNavigator", { screen: "Home" });
+  };
+
+  const addToList = async (item) => {
+    try {
+      let response;
+
+      if (userMyList.includes(item._id)) {
+        response = await removeMovieFromList(item._id);
+      } else {
+        response = await addMovieToList(item._id);
+      }
+
+      setUserMyList(response.user.mylist);
+      updateMylist(response.user.mylist);
+    } catch (error) {
+      console.error("Error adding/removing movie from list:", error);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -41,19 +63,22 @@ export default function MovieBanner({
           colorMode="dark"
           transition={{ type: "timing" }}
         />
+
+        {/* TV Shows Button Skeleton */}
+        <View style={styles.skeletonTvShowsWrapper}>
+          <Skeleton
+            width={100}
+            height={35}
+            radius={6}
+            colorMode="dark"
+            transition={{ type: "timing" }}
+          />
+        </View>
+
         <View style={styles.skeletonButtonsOverlay}>
           {/* My List Button Skeleton */}
           <View style={styles.skeletonButtonColumn}>
-            {/* Icon */}
-            <Skeleton
-              width={40}
-              height={40}
-              radius={20}
-              transition={{ type: "timing" }}
-              colorMode="dark"
-            />
-
-            {/* Text */}
+            <Skeleton width={40} height={40} radius={20} colorMode="dark" />
             <Skeleton width={60} height={20} radius={4} colorMode="dark" />
           </View>
 
@@ -70,39 +95,13 @@ export default function MovieBanner({
 
           {/* Info Button Skeleton */}
           <View style={styles.skeletonButtonColumn}>
-            {/* Icon */}
-            <Skeleton
-              width={40}
-              height={40}
-              radius={20}
-              colorMode="dark"
-              transition={{ type: "timing" }}
-            />
-
-            {/* Text */}
+            <Skeleton width={40} height={40} radius={20} colorMode="dark" />
             <Skeleton width={60} height={20} radius={4} colorMode="dark" />
           </View>
         </View>
       </View>
     );
   }
-
-  const addToList = async (item) => {
-    try {
-      let response;
-
-      if (userMyList.includes(item._id)) {
-        response = await removeMovieFromList(item._id);
-      } else {
-        response = await addMovieToList(item._id);
-      }
-
-      setUserMyList(response.user.mylist);
-      navigation.navigate("Home", { mylist: response.user.mylist });
-    } catch (error) {
-      console.error("Error adding/removing movie from list:", error);
-    }
-  };
 
   const renderMovieBanner = ({ item }) => {
     return (
@@ -112,6 +111,12 @@ export default function MovieBanner({
           resizeMode="cover"
           style={styles.posterImage}
         >
+          <TouchableOpacity
+            style={styles.transparentButton}
+            onPress={moveToShowsScreen}
+          >
+            <Text style={styles.buttonText}>TV Shows</Text>
+          </TouchableOpacity>
           <LinearGradient
             colors={["rgba(0,0,0,0.1)", "rgba(0,0,0,1)"]}
             style={styles.linearGradient}
@@ -121,7 +126,7 @@ export default function MovieBanner({
               style={styles.myListButton}
             >
               {userMyList.includes(item._id) ? (
-                <AntDesignIcon name="checkcircle" size={30} color="#daa520" />
+                <AntDesignIcon name="check-circle" size={30} color="#daa520" />
               ) : (
                 <AntDesignIcon name="plus" size={30} color="white" />
               )}
@@ -129,7 +134,13 @@ export default function MovieBanner({
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() => posterPlayButton(item._id, item.downloadLink)}
+              onPress={() =>
+                posterPlayButton(
+                  item._id,
+                  item.downloadLink,
+                  item.originalTitle
+                )
+              }
               style={styles.posterPlayButton}
             >
               <EntypoIcon name="controller-play" size={30} color="black" />
@@ -140,7 +151,7 @@ export default function MovieBanner({
               onPress={() => posterInfoButton(item)}
               style={styles.posterInfoButton}
             >
-              <AntDesignIcon name="infocirlceo" size={30} color="white" />
+              <AntDesignIcon name="info-circle" size={30} color="white" />
               <Text style={styles.infoButtonText}>Info</Text>
             </TouchableOpacity>
           </LinearGradient>
@@ -227,5 +238,26 @@ const styles = StyleSheet.create({
 
   skeletonPlayButton: {
     backgroundColor: "transparent",
+  },
+  skeletonTvShowsWrapper: {
+    position: "absolute",
+    top: responsiveHeight(6),
+    right: responsiveWidth(3),
+  },
+  transparentButton: {
+    position: "absolute",
+    top: responsiveHeight(6),
+    right: responsiveWidth(3),
+    backgroundColor: "white",
+    padding: 5,
+    borderRadius: 5,
+    borderWidth: 2,
+    borderColor: "white",
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "black",
+    fontSize: responsiveFontSize(2),
+    fontWeight: "bold",
   },
 });

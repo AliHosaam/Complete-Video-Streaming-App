@@ -4,50 +4,52 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
-import { useState, useEffect } from "react";
-import { userLoginAPI, checkAuthAPI } from "../api/userLoginAPI";
+import { useState } from "react";
+import { userLoginAPI } from "../api/userLoginAPI";
 import { useNavigation } from "@react-navigation/native";
 
 export default function LoginScreen() {
   const navigation = useNavigation();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const checkAuhUser = async () => {
-      const response = await checkAuthAPI();
+  const handleLogin = async () => {
+    if (!password || !username) {
+      console.warn("Please enter username and password");
+      Alert.alert("Error", "Please enter username and password!");
+      return;
+    }
 
-      if (response.authenticated) {
-        navigation.navigate("BottomTabNavigator", {
+    setIsLoading(true);
+
+    try {
+      const responseData = await userLoginAPI(username, password);
+
+      if (responseData.success === false) {
+        console.warn("Wrong username or password!");
+        Alert.alert("Error", "Wrong username or password!");
+      } else if (responseData.success === true) {
+        navigation.replace("BottomTabNavigator", {
           screen: "Home",
           params: {
-            mylist: response.user.mylist,
+            mylist: responseData.user.mylist,
           },
         });
       }
-    };
-
-    checkAuhUser();
-  }, [checkAuthAPI, navigation]);
-
-  const handleLogin = async () => {
-    const responseData = await userLoginAPI(username, password);
-
-    if (responseData.success === false) {
-      console.warn("Wrong username or password!");
-    } else if (responseData.success === true) {
-      navigation.navigate("BottomTabNavigator", {
-        screen: "Home",
-        params: {
-          mylist: responseData.user.mylist,
-        },
-      });
+    } catch (error) {
+      console.error("Login error:", error);
+      Alert.alert("Error", "An error occurred during login. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleRegister = () => {
-    navigation.navigate("RegisterScreen");
+    navigation.replace("RegisterScreen");
   };
 
   return (
@@ -59,6 +61,7 @@ export default function LoginScreen() {
         placeholderTextColor="#FFFFFF"
         value={username}
         onChangeText={(text) => setUsername(text)}
+        editable={!isLoading}
       />
       <TextInput
         style={styles.input}
@@ -67,14 +70,27 @@ export default function LoginScreen() {
         value={password}
         secureTextEntry
         onChangeText={(text) => setPassword(text)}
+        editable={!isLoading}
       />
-
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
+      <TouchableOpacity
+        style={[styles.loginButton, isLoading && styles.loginButtonDisabled]}
+        onPress={handleLogin}
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <ActivityIndicator size="small" color="#000000" />
+        ) : (
+          <Text style={styles.buttonText}>Login</Text>
+        )}
       </TouchableOpacity>
-
-      <TouchableOpacity onPress={handleRegister}>
-        <Text style={[styles.buttonText, { color: "#ffffff" }]}>
+      <TouchableOpacity onPress={handleRegister} disabled={isLoading}>
+        <Text
+          style={[
+            styles.buttonText,
+            { color: "#ffffff" },
+            isLoading && { opacity: 0.5 },
+          ]}
+        >
           Not a member. Register!
         </Text>
       </TouchableOpacity>
@@ -114,6 +130,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 15,
+  },
+  loginButtonDisabled: {
+    opacity: 0.7,
   },
   buttonText: {
     color: "#000000",

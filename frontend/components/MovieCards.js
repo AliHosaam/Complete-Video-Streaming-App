@@ -25,6 +25,16 @@ export default function MovieCards({ genreID, label, handleBanner }) {
     fetchMoviesList();
   }, [genreID]);
 
+  const shuffleArray = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  };
+
+  const shuffledMoviesList = shuffleArray(moviesList);
+
   const renderMovieCard = ({ item }) => {
     return (
       <TouchableOpacity
@@ -74,7 +84,7 @@ export default function MovieCards({ genreID, label, handleBanner }) {
       <Text style={styles.label}>{label}</Text>
 
       <FlatList
-        data={moviesList.slice(0, 10)}
+        data={shuffledMoviesList.slice(0, 10)}
         keyExtractor={(item) => item._id}
         renderItem={renderMovieCard}
         windowSize={2}

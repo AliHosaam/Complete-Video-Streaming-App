@@ -45,7 +45,6 @@ const styles = StyleSheet.create({
     height: 50,
     backgroundColor: "#333333",
     borderRadius: 20,
-    paddingHorizontal: 10,
     marginBottom: 20,
     color: "#FFFFFF",
     display: "flex",

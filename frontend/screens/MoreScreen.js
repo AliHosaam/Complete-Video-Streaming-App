@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import { userLogout } from "../api/userLoginAPI";
@@ -10,18 +10,32 @@ export default function MoreScreen() {
     navigation.navigate("HistoryScreen");
   };
 
-  const handleLogout = async () => {
+  const onLogout = async () => {
     try {
       const response = await userLogout();
 
       if (response.success === true) {
-        navigation.navigate("LoginScreen");
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "LoginScreen" }],
+        });
       } else {
         console.error("Logout failed");
       }
     } catch (error) {
       console.error("Error logging out:", error);
     }
+  };
+
+  const handleLogout = async () => {
+    Alert.alert("Confirm", "Are you sure you want to log out?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Logout",
+        style: "destructive",
+        onPress: () => onLogout(),
+      },
+    ]);
   };
 
   return (

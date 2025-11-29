@@ -6,6 +6,8 @@
   "prisma-smart-formatter.prisma.defaultFormatter": "Prisma.prisma",
   "cSpell.words": [
     "checkcircle",
+    "checkcon",
+    "ellipsize",
     "Entypo",
     "flatrate",
     "hintrc",
@@ -15,9 +17,12 @@
     "moti",
     "mylist",
     "poweroff",
+    "reeq",
     "TMDB",
     "watchme",
-    "Watchtime"
+    "Watchtime",
+    "worklet",
+    "worklets"
   ],
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit",

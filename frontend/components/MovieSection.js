@@ -3,6 +3,7 @@ import formatDate from "../utils/formatDate";
 import formatRuntime from "../utils/formatRuntime";
 import { useNavigation } from "@react-navigation/native";
 import { Skeleton } from "moti/skeleton";
+import EntypoIcon from "react-native-vector-icons/Entypo";
 
 export default function MovieSection({
   movie,
@@ -84,9 +85,17 @@ export default function MovieSection({
             ))}
           </View>
 
-          <Text style={styles.movieRunTime}>
-            {formatRuntime(movie.runTime)}
-          </Text>
+          <View style={styles.runtimeContainer}>
+            <EntypoIcon
+              name="clock"
+              size={12}
+              color="#f0f0f0"
+              style={{ paddingTop: 18 }}
+            />
+            <Text style={styles.movieRunTime}>
+              {formatRuntime(movie.runTime)}
+            </Text>
+          </View>
         </View>
 
         {showWatchedMoviesDeleteButton && (
@@ -149,12 +158,17 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: "#333",
   },
+  runtimeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingLeft: 10,
+  },
   movieRunTime: {
     color: "#f0f0f0",
     fontSize: 13,
     fontWeight: "bold",
     marginTop: 18,
-    paddingLeft: 10,
+    paddingLeft: 5,
   },
   deleteButton: {
     position: "absolute",

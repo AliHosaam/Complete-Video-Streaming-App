@@ -24,4 +24,16 @@ router.get("/deleteMovieRoute", isAdminAuthenticated, (req, res) => {
   res.redirect("/delete-movie");
 });
 
+router.get("/addShowRoute", isAdminAuthenticated, (req, res) => {
+  res.render("addShowList");
+});
+
+router.get("/updateShowRoute", isAdminAuthenticated, (req, res) => {
+  res.redirect("/edit-show-list");
+});
+
+router.get("/deleteShowRoute", isAdminAuthenticated, (req, res) => {
+  res.redirect("/delete-show");
+});
+
 module.exports = router;

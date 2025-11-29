@@ -1,3 +1,5 @@
+import { ipAddress } from "../constants";
+
 export const userRegisterAPI = async (username, password) => {
   const options = {
     method: "POST",
@@ -11,7 +13,7 @@ export const userRegisterAPI = async (username, password) => {
     }),
   };
 
-  url = "http://192.168.1.5:5000/register";
+  let url = `${ipAddress}/register`;
 
   try {
     const response = await fetch(url, options);

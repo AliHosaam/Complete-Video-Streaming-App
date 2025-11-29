@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const Movie = require("../models/Movie");
@@ -11,8 +12,7 @@ router.post("/fetch-movie", async (req, res) => {
       method: "GET",
       headers: {
         accept: "application/json",
-        Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3Yjk2MWYwZjY3NjRmYjM4NGE2YzU5YjE0NDc1MzQ4ZCIsIm5iZiI6MTc0MzM0MjE4My42MTMsInN1YiI6IjY3ZTk0YTY3YWY3NTJhM2IyNGY2ZWUzNCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.3fy2gJic9gzGDuqDMBRtlIQ-A0KmBqoUTkH34PD7rrs",
+        Authorization: process.env.TMDB_AUTH_KEY,
       },
     };
 
@@ -40,8 +40,7 @@ router.get("/addMovie/:movieId", async (req, res) => {
       method: "GET",
       headers: {
         accept: "application/json",
-        Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3Yjk2MWYwZjY3NjRmYjM4NGE2YzU5YjE0NDc1MzQ4ZCIsIm5iZiI6MTc0MzM0MjE4My42MTMsInN1YiI6IjY3ZTk0YTY3YWY3NTJhM2IyNGY2ZWUzNCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.3fy2gJic9gzGDuqDMBRtlIQ-A0KmBqoUTkH34PD7rrs",
+        Authorization: process.env.TMDB_AUTH_KEY,
       },
     };
 

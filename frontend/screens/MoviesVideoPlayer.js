@@ -1,35 +1,111 @@
-import { StatusBar, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  StatusBar,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  ActivityIndicator,
+  Text,
+  Image,
+  Alert,
+  Platform,
+} from "react-native";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { useEventListener } from "expo";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getWatchTime, updateWatchTime } from "../api/userMovieWatchtimeAPI";
+import { useNavigation, useIsFocused } from "@react-navigation/native";
+import * as ScreenOrientation from "expo-screen-orientation";
+import {
+  responsiveWidth,
+  responsiveFontSize,
+} from "react-native-responsive-dimensions";
+import Slider from "@react-native-community/slider";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import VerticalSlider from "rn-vertical-slider-matyno";
+import * as Brightness from "expo-brightness";
+import DoubleTap from "../components/DoubleTap";
 
 const MoviesVideoPlayer = ({ route }) => {
-  const { movieLink, movieId } = route.params;
-  const [progress, setProgress] = useState(0);
+  const navigation = useNavigation();
+  const isFocused = useIsFocused();
+
+  const { movieLink, movieId, movieName } = route.params;
+
   const [watchedTime, setWatchedTime] = useState(0);
+  const [videoPressed, setVideoPressed] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [zoomedIn, setZoomedIn] = useState(false);
+  const [isBuffering, setIsBuffering] = useState(true);
+  const [duration, setDuration] = useState(0);
+  const [brightnessLevel, setBrightnessLevel] = useState(0);
+
+  const videoRef = useRef(null);
+  const orientationLockTimeout = useRef(null);
 
   const player = useVideoPlayer(movieLink, (player) => {
-    player.loop = true;
+    player.loop = false;
     player.play();
     player.timeUpdateEventInterval = 1;
     player.showNowPlayingNotification = true;
     player.staysActiveInBackground = true;
-  });
-
-  useEventListener(player, "timeUpdate", (payload) => {
-    setProgress(payload.currentTime);
+    player.allowsExternalPlayback = true;
   });
 
   useEffect(() => {
-    const updateWatchedTime = async () => {
-      if (!isNaN(progress)) {
-        await updateWatchTime(parseInt(progress), movieId);
-      }
-    };
+    if (orientationLockTimeout.current) {
+      clearTimeout(orientationLockTimeout.current);
+    }
 
-    updateWatchedTime();
-  }, [progress]);
+    if (isFocused) {
+      orientationLockTimeout.current = setTimeout(async () => {
+        try {
+          await ScreenOrientation.lockAsync(
+            ScreenOrientation.OrientationLock.LANDSCAPE_RIGHT
+          );
+        } catch (error) {
+          console.error("Error locking orientation:", error);
+        }
+      }, 100);
+    } else {
+      (async () => {
+        try {
+          await ScreenOrientation.lockAsync(
+            ScreenOrientation.OrientationLock.PORTRAIT_UP
+          );
+        } catch (error) {
+          console.error("Error unlocking orientation:", error);
+        }
+      })();
+    }
+
+    return () => {
+      if (orientationLockTimeout.current) {
+        clearTimeout(orientationLockTimeout.current);
+      }
+
+      (async () => {
+        try {
+          await ScreenOrientation.lockAsync(
+            ScreenOrientation.OrientationLock.PORTRAIT_UP
+          );
+        } catch (error) {
+          console.error("Error in cleanup:", error);
+        }
+      })();
+    };
+  }, [isFocused]);
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Brightness.requestPermissionsAsync();
+      if (status === "granted") {
+        const current = await Brightness.getBrightnessAsync();
+        setBrightnessLevel(current);
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     const fetchWatchedTime = async () => {
@@ -40,7 +116,6 @@ const MoviesVideoPlayer = ({ route }) => {
         console.error("Error fetching watched time:", error);
       }
     };
-
     fetchWatchedTime();
   }, [movieId]);
 
@@ -50,22 +125,334 @@ const MoviesVideoPlayer = ({ route }) => {
     }
   }, [player, watchedTime]);
 
+  useEventListener(player, "statusChange", (payload) => {
+    const status = payload.status;
+    if (status === "loading") {
+      setIsBuffering(true);
+    } else if (status === "readyToPlay") {
+      setIsBuffering(false);
+      setDuration(player.duration || 0);
+    } else if (status === "error") {
+      setIsBuffering(false);
+    }
+  });
+
+  useEventListener(player, "timeUpdate", (payload) => {
+    setProgress(payload.currentTime);
+  });
+
+  const handleVideoPressed = () => {
+    setVideoPressed(!videoPressed);
+  };
+
+  const moveBackwards = () => {
+    try {
+      if (player && player.currentTime !== undefined) {
+        const newTime = Math.max(0, player.currentTime - 10);
+        player.currentTime = newTime;
+        setProgress(newTime);
+      }
+    } catch (error) {
+      console.error("Error in moveBackwards:", error);
+    }
+  };
+
+  const moveForwards = () => {
+    try {
+      if (player && player.currentTime !== undefined) {
+        const newTime = Math.min(duration, player.currentTime + 10);
+        player.currentTime = newTime;
+        setProgress(newTime);
+      }
+    } catch (error) {
+      console.error("Error in moveForwards:", error);
+    }
+  };
+
+  const handlePlayVideo = () => {
+    setIsPaused(false);
+    if (player) player.play();
+  };
+
+  const handlePauseVideo = () => {
+    setIsPaused(true);
+    if (player) player.pause();
+  };
+
+  const formatDuration = (timeInSeconds) => {
+    const hours = Math.floor(timeInSeconds / 3600);
+    const minutes = Math.floor((timeInSeconds % 3600) / 60);
+    const seconds = Math.floor(timeInSeconds % 60);
+
+    const formattedHours =
+      hours > 0 ? String(hours).padStart(2, "0") + ":" : "";
+    const formattedMinutes = String(minutes).padStart(2, "0") + ":";
+    const formattedSeconds = String(seconds).padStart(2, "0");
+
+    return formattedHours + formattedMinutes + formattedSeconds;
+  };
+
+  const handleVolumeUp = () => {
+    setIsMuted(false);
+    if (player) player.muted = false;
+  };
+
+  const handleMute = () => {
+    setIsMuted(true);
+    if (player) player.muted = true;
+  };
+
+  const handleZoomIn = () => setZoomedIn(true);
+
+  const handleZoomOut = () => setZoomedIn(false);
+
+  const handleUpdateMovieWatchTime = async () => {
+    try {
+      if (!isNaN(progress)) {
+        await updateWatchTime(parseInt(progress), movieId);
+      }
+    } catch (error) {
+      console.error("Error updating watch time:", error);
+      e;
+    }
+  };
+
+  const goBack = async () => {
+    try {
+      handleUpdateMovieWatchTime();
+      await ScreenOrientation.lockAsync(
+        ScreenOrientation.OrientationLock.PORTRAIT_UP
+      );
+    } catch (error) {
+      console.error("Error locking orientation:", error);
+    }
+
+    setTimeout(() => {
+      navigation.goBack();
+    }, 100);
+  };
+
+  const handleBrightnessChange = async (value) => {
+    setBrightnessLevel(value);
+
+    try {
+      await Brightness.setBrightnessAsync(value);
+    } catch (error) {
+      console.error("Failed to set brightness:", error);
+    }
+  };
+
+  const showAirPlayInfo = () => {
+    Alert.alert(
+      "📺 Cast to TV",
+      'To watch on your TV:\n\n1. Swipe down from the top-right corner\n2. Tap "Screen Mirroring"\n3. Select your Apple TV or Smart TV\n\nYour video will appear on the TV!',
+      [{ text: "Got it!" }]
+    );
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar hidden />
+      <TouchableOpacity activeOpacity={1} style={styles.backgroundVideo}>
+        <VideoView
+          ref={videoRef}
+          style={[styles.video, zoomedIn ? styles.zoomIn : styles.zoomOut]}
+          player={player}
+          fullscreenOptions={false}
+          allowsPictureInPicture
+          startsPictureInPictureAutomatically
+          nativeControls={false}
+        />
 
-      <View>
-        <TouchableOpacity activeOpacity={1}>
-          <VideoView
-            style={{ width: "100%", height: "100%" }}
-            player={player}
-            allowsFullscreen
-            allowsPictureInPicture
-            allowsVideoFrameAnalysis
-            startsPictureInPictureAutomatically
-          />
+        <TouchableOpacity
+          onPress={handleVideoPressed}
+          style={[
+            styles.videoScreenContainer,
+            {
+              backgroundColor: videoPressed
+                ? "rgba(0,0,0,0.5)"
+                : "rgba(0,0,0,0)",
+            },
+          ]}
+        >
+          {!isBuffering ? (
+            <View
+              style={{ opacity: videoPressed ? 1 : 0, flexDirection: "row" }}
+            >
+              <TouchableOpacity onPress={moveBackwards}>
+                <Image
+                  source={require("../assets/images/backward.png")}
+                  style={{ width: 50, height: 50, tintColor: "white" }}
+                />
+              </TouchableOpacity>
+
+              {isPaused ? (
+                <TouchableOpacity onPress={handlePlayVideo}>
+                  <Image
+                    source={require("../assets/images/play.png")}
+                    style={{
+                      width: 50,
+                      height: 50,
+                      tintColor: "white",
+                      marginRight: responsiveWidth(10),
+                      marginLeft: responsiveWidth(10),
+                    }}
+                  />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity onPress={handlePauseVideo}>
+                  <Image
+                    source={require("../assets/images/pause.png")}
+                    style={{
+                      width: 50,
+                      height: 50,
+                      tintColor: "white",
+                      marginRight: responsiveWidth(10),
+                      marginLeft: responsiveWidth(10),
+                    }}
+                  />
+                </TouchableOpacity>
+              )}
+
+              <TouchableOpacity onPress={moveForwards}>
+                <Image
+                  source={require("../assets/images/forward.png")}
+                  style={{ width: 50, height: 50, tintColor: "white" }}
+                />
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#fff" />
+            </View>
+          )}
+
+          <View
+            style={[
+              styles.backButtonContainer,
+              { opacity: videoPressed ? 1 : 0 },
+            ]}
+          >
+            <TouchableOpacity onPress={goBack}>
+              <Image
+                source={require("../assets/images/arrow.png")}
+                style={styles.goBackIcon}
+              />
+            </TouchableOpacity>
+            <Text style={styles.movieTitleText}>{movieName}</Text>
+            {Platform.OS === "ios" && (
+              <TouchableOpacity onPress={showAirPlayInfo}>
+                <Icon name="cast" size={35} color="white" />
+              </TouchableOpacity>
+            )}
+          </View>
+
+          <DoubleTap position="left" onDoubleTap={moveBackwards} />
+          <DoubleTap position="right" onDoubleTap={moveForwards} />
+
+          <View
+            style={{
+              width: "15%",
+              height: "40%",
+              flexDirection: "column",
+              gap: 10,
+              position: "absolute",
+              bottom: 120,
+              left: 0,
+              paddingLeft: 60,
+              paddingRight: 0,
+              alignItems: "center",
+              opacity: videoPressed ? 1 : 0,
+            }}
+          >
+            <Icon name="brightness-7" size={30} color="white" />
+            <VerticalSlider
+              onChange={handleBrightnessChange}
+              value={brightnessLevel}
+              disabled={false}
+              width={20}
+              height={100}
+              min={0.1}
+              max={1}
+              step={0.1}
+              borderRadius={2}
+              minimumTrackTintColor="#daa520"
+              maximumTrackTintColor="grey"
+            />
+          </View>
+
+          <View
+            style={[styles.sliderContainer, { opacity: videoPressed ? 1 : 0 }]}
+          >
+            <Text style={styles.sliderText}>{formatDuration(progress)}</Text>
+            <Slider
+              style={styles.sliderProgressBar}
+              minimumValue={0}
+              maximumValue={duration}
+              minimumTrackTintColor="#daa520"
+              maximumTrackTintColor="grey"
+              thumbTintColor="#daa520"
+              value={progress}
+              onValueChange={(value) => {
+                player.currentTime = value;
+                setProgress(value);
+              }}
+              onSlidingStart={() => {
+                player.pause();
+              }}
+              onSlidingComplete={() => {
+                if (!isPaused) {
+                  player.play();
+                }
+              }}
+            />
+            <Text style={styles.sliderText}>{formatDuration(duration)}</Text>
+          </View>
+
+          {!isBuffering && (
+            <View
+              style={[
+                styles.audioSubsIconContainer,
+                { opacity: videoPressed ? 1 : 0 },
+              ]}
+            >
+              {isMuted ? (
+                <TouchableOpacity onPress={handleVolumeUp}>
+                  <Image
+                    source={require("../assets/images/mute.png")}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      tintColor: "white",
+                    }}
+                  />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity onPress={handleMute}>
+                  <Image
+                    source={require("../assets/images/volume.png")}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      tintColor: "white",
+                    }}
+                  />
+                </TouchableOpacity>
+              )}
+
+              {!zoomedIn ? (
+                <TouchableOpacity onPress={handleZoomIn}>
+                  <Icon name="zoom-in-map" size={35} color="white"></Icon>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity onPress={handleZoomOut}>
+                  <Icon name="zoom-out-map" size={35} color="white"></Icon>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
         </TouchableOpacity>
-      </View>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -76,5 +463,93 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "black",
+  },
+  video: {
+    width: "100%",
+    height: "100%",
+  },
+  zoomIn: {
+    width: "130%",
+    height: "130%",
+    marginLeft: "-15%",
+  },
+  zoomOut: {
+    width: "100%",
+    height: "100%",
+  },
+  backgroundVideo: {
+    width: "100%",
+    height: "100%",
+  },
+  videoScreenContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.4)",
+  },
+  sliderProgressBar: {
+    flex: 1,
+    color: "daa520",
+    bottom: 40,
+  },
+  sliderContainer: {
+    width: "90%",
+    height: "25%",
+    flexDirection: "row",
+    position: "absolute",
+    bottom: 0,
+    paddingLeft: 20,
+    paddingRight: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  sliderText: {
+    color: "white",
+    bottom: 40,
+    marginHorizontal: 10,
+  },
+  audioSubsIconContainer: {
+    width: "80%",
+    justifyContent: "space-between",
+    position: "absolute",
+    bottom: 10,
+    paddingLeft: 20,
+    paddingRight: 20,
+    flexDirection: "row",
+  },
+  backButtonContainer: {
+    width: "80%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    position: "absolute",
+    top: 15,
+    paddingLeft: 20,
+    paddingRight: 20,
+  },
+  goBackIcon: {
+    width: 30,
+    height: 30,
+    tintColor: "white",
+  },
+  movieTitleText: {
+    color: "white",
+    flex: 1,
+    fontSize: responsiveFontSize(2),
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });

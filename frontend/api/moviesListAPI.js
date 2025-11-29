@@ -1,3 +1,5 @@
+import { ipAddress } from "../constants";
+
 export const moviesListAPI = async (genreID) => {
   const options = {
     method: "GET",
@@ -8,9 +10,9 @@ export const moviesListAPI = async (genreID) => {
 
   let url = "";
   if (genreID) {
-    url = `http://192.168.1.5:5000/getMovies/${genreID}`;
+    url = `${ipAddress}/getMovies/${genreID}`;
   } else {
-    url = "http://192.168.1.5:5000/getMovies";
+    url = `${ipAddress}/getMovies`;
   }
 
   try {
@@ -30,7 +32,7 @@ export const getSimilarMovies = async (moviesID) => {
     },
   };
 
-  let url = `http://192.168.1.5:5000/getSimilarMovies/${moviesID}`;
+  let url = `${ipAddress}/getSimilarMovies/${moviesID}`;
 
   try {
     const response = await fetch(url, options);
@@ -49,7 +51,7 @@ export const getSearchedMovies = async (movieName) => {
     },
   };
 
-  let url = `http://192.168.1.5:5000/searchMovies/${movieName}`;
+  let url = `${ipAddress}/searchMovies/${movieName}`;
 
   try {
     const response = await fetch(url, options);

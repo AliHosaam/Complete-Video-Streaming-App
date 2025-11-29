@@ -1,0 +1,178 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/addMovie.css" />
+    <title>Add TV Show</title>
+</head>
+
+<body>
+    <h1>Add TV Show</h1>
+    <a href="/">Go to Dashboard</a>
+    <div class="movieDetailsContainer">
+        <div class="posterContainer">
+            <img src="{{showDetails.poster_path}}" alt="Show Poster" />
+        </div>
+        <div class="detailsTextContainer">
+            <h2>{{showDetails.name}}</h2>
+            <p style="font-size: 0.8rem; margin-bottom:5px;">
+                {{showDetails.overview}}
+            </p>
+            <p style="color: black; font-weight: bold;">
+                {{showDetails.first_air_date}}
+                .
+                {{showDetails.genres}}
+                .
+                {{showDetails.vote_average}}/10
+
+            </p>
+        </div>
+    </div>
+
+    {{#each showDetails.seasons}}
+    <div class="seasonContainer">
+        <h3 class="seasonNum">Season {{this.season_number}}</h3>
+
+        <div>
+            {{#each this.episodes}}
+            <div class="episodesDetailsContainer">
+                {{#if this.poster}}
+                <div class="episodePosterContainer">
+                    <img src="{{this.poster}}" alt="Episode Poster" style="max-width: 100px;" />
+                </div>
+                {{/if}}
+                <div class="episodeDetailsTextContainer">
+                    <strong>Episode {{this.episode_number}}:</strong> {{this.name}} ({{this.runtime}} mins)
+                    <p>{{this.overview}}</p>
+
+                    <label for="downloadLink">Download Link:</label>
+                    <input type="text" value="{{this.downloadLink}}" id="edl{{../season_number}}{{this.episode_number}}"
+                        name="edl{{../season_number}}{{this.episode_number}}" placeholder="Enter download link" />
+                    <hr style="margin-top: 30px">
+                </div>
+            </div>
+            {{/each}}
+        </div>
+
+    </div>
+    {{/each}}
+    <button class="submit-btn" type="button" style="display: flex;
+        align-items: center justify-content: space-between;
+        max-width: 800px;
+        margin: 0 auto;
+        flex-direction: column;" onclick="submitShowDetails()">Add TV Show</button>
+
+</body>
+
+<script>
+
+    const showDetailsTemplate = {{{ json showDetails }}};
+
+    function submitShowDetails() {
+        // Clone the template
+        let showDetailsData = {
+            showDetails: {
+                name: showDetailsTemplate.name,
+                poster_path: showDetailsTemplate.poster_path,
+                backdrop_path: showDetailsTemplate.backdrop_path,
+                overview: showDetailsTemplate.overview,
+                first_air_date: showDetailsTemplate.first_air_date,
+                genres: showDetailsTemplate.genres,
+                vote_average: showDetailsTemplate.vote_average
+            },
+            seasons: []
+        };
+
+
+        showDetailsTemplate.seasons.forEach(season => {
+            let seasonData = {
+                season_number: season.season_number,
+                episodes: []
+            };
+
+            season.episodes.forEach(episode => {
+                let episodeData = {
+                    episode_number: episode.episode_number,
+                    name: episode.name,
+                    runtime: episode.runtime,
+                    overview: episode.overview,
+                    poster: episode.poster,
+                    downloadLink: document.getElementById(`edl${season.season_number}${episode.episode_number}`).value
+                };
+                seasonData.episodes.push(episodeData);
+            });
+
+            showDetailsData.seasons.push(seasonData);
+        });
+
+
+
+        fetch('/add-show-details', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(showDetailsData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                if (data.success) {
+                    alert('TV Show added successfully!');
+
+                } else {
+                    alert('Failed to add TV Show.');
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+</script>
+
+<style>
+    .seasonContainer {
+        display: flex;
+        align-items: center justify-content: space-between;
+        max-width: 800px;
+        margin: 0 auto;
+        flex-direction: column;
+    }
+
+    .seasonNum {
+        text-align: center;
+    }
+
+    .episodesDetailsContainer {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        max-width: 800px;
+        margin: 0 auto;
+        borderBottom: 1px solid black;
+        marginTop: 10px;
+    }
+
+    .episodePosterContainer {
+        flex-shrink: 0;
+    }
+
+    .episodePosterContainer img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .episodeDetailsTextContainer {
+        flex-grow: 1;
+        margin-left: 20px;
+        margin-bottom: 25px;
+        font-size: 0.8em;
+    }
+
+    .episodeDetailsTextContainer h2 {
+        margin-top: 0;
+    }
+</style>
+
+</html>

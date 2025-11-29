@@ -1,3 +1,5 @@
+import { ipAddress } from "../constants";
+
 export const userLoginAPI = async (username, password) => {
   const options = {
     method: "POST",
@@ -11,7 +13,7 @@ export const userLoginAPI = async (username, password) => {
     }),
   };
 
-  url = "http://192.168.1.5:5000/login";
+  let url = `${ipAddress}/login`;
 
   try {
     const response = await fetch(url, options);
@@ -31,7 +33,7 @@ export const checkAuthAPI = async () => {
     },
   };
 
-  url = "http://192.168.1.5:5000/check-auth";
+  let url = `${ipAddress}/check-auth`;
 
   try {
     const response = await fetch(url, options);
@@ -51,7 +53,7 @@ export const userLogout = async () => {
     },
   };
 
-  url = "http://192.168.1.5:5000/logout";
+  let url = `${ipAddress}/logout`;
 
   try {
     const response = await fetch(url, options);

@@ -12,25 +12,22 @@ export default function MoviesDetailsScreen({ route }) {
     return `$${amount.toLocaleString("en-US")}`;
   };
 
-  const handleVideoPlayer = (downloadLink, movieId) => {
+  const handleVideoPlayer = (downloadLink, movieId, movieName) => {
     navigation.navigate("MoviesVideoPlayer", {
       movieLink: downloadLink,
       movieId: movieId,
+      movieName: movieName,
     });
   };
 
   return (
     <View style={styles.container}>
       <StatusBar translucent backgroundColor="transparent" />
-
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={styles.scrollView}
-        bounces={false}
       >
         <MovieDetails movie={movie} handleVideoPlayer={handleVideoPlayer} />
-
-        <View style={styles.firstDivider} />
 
         <MovieMoreDetails
           budget={movie.budget}
@@ -40,7 +37,7 @@ export default function MoviesDetailsScreen({ route }) {
           formatToUST={formatToUST}
         />
 
-        <View style={styles.secondDivider} />
+        <View style={styles.divider} />
 
         <RelatedMovies movieId={movie._id} />
       </ScrollView>
@@ -56,14 +53,8 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
-  firstDivider: {
-    height: 0.5,
-    backgroundColor: "#333",
-    marginTop: 160,
-    marginHorizontal: 50,
-  },
-  secondDivider: {
-    height: 0.5,
+  divider: {
+    height: 0.9,
     backgroundColor: "#333",
     marginTop: 5,
     marginHorizontal: 50,

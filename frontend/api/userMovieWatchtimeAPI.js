@@ -1,3 +1,5 @@
+import { ipAddress } from "../constants";
+
 export const updateWatchTime = async (watchedTime, movieId) => {
   const options = {
     method: "POST",
@@ -10,7 +12,7 @@ export const updateWatchTime = async (watchedTime, movieId) => {
     }),
   };
 
-  url = `http://192.168.1.5:5000/update-watched-time/${movieId}`;
+  let url = `${ipAddress}/update-watched-time/${movieId}`;
 
   try {
     const response = await fetch(url, options);
@@ -29,7 +31,7 @@ export const getAllWatchTimes = async () => {
     },
   };
 
-  url = "http://192.168.1.5:5000/watched-movies";
+  let url = `${ipAddress}/watched-movies`;
 
   try {
     const response = await fetch(url, options);
@@ -48,7 +50,7 @@ export const getWatchTime = async (movieId) => {
     },
   };
 
-  url = `http://192.168.1.5:5000/watched-time/${movieId}`;
+  let url = `${ipAddress}/watched-time/${movieId}`;
 
   try {
     const response = await fetch(url, options);
@@ -68,7 +70,7 @@ export const removeWatchedMovie = async (movieId) => {
     },
   };
 
-  url = `http://192.168.1.5:5000/remove-watched-movie/${movieId}`;
+  let url = `${ipAddress}/remove-watched-movie/${movieId}`;
 
   try {
     const response = await fetch(url, options);
@@ -88,7 +90,7 @@ export const removeAllWatchedMovie = async () => {
     },
   };
 
-  url = "http://192.168.1.5:5000/remove-all-watched-movies";
+  let url = `${ipAddress}/remove-all-watched-movies`;
 
   try {
     const response = await fetch(url, options);

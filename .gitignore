@@ -2,6 +2,7 @@
 
 # dependencies
 node_modules/
+constants/index.js
 
 # Expo
 .expo/
