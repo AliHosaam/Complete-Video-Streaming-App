@@ -8,14 +8,18 @@ import {
 import EntypoIcon from "react-native-vector-icons/Entypo";
 import { useNavigation } from "@react-navigation/native";
 
-const EpisodeItem = ({ episode }) => {
+const EpisodeItem = ({ episode, seasonNumber }) => {
   const navigation = useNavigation();
+
+  console.log(episode);
 
   const handleVideoPlayer = (episodeId, episodeLink, episodeName) => {
     navigation.navigate("ShowsVideoPlayer", {
       episodeId: episodeId,
       episodeLink: episodeLink,
       episodeName: episodeName,
+      episodeNumber: episode.episode_number,
+      seasonNumber: seasonNumber,
     });
   };
 

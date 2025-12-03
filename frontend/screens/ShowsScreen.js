@@ -62,6 +62,7 @@ export default function ShowsScreen() {
       let episodeId = latestWatchedEpisodeId?.episodeId?.episode;
       let episodeLink = "";
       let episodeName = "";
+      let episodeNumber = "";
 
       if (episodeId) {
         for (const season of show.seasons) {
@@ -72,11 +73,14 @@ export default function ShowsScreen() {
           if (foundEpisode) {
             episodeLink = foundEpisode.downloadLink;
             episodeName = foundEpisode.name;
+            episodeNumber = foundEpisode.episode_number;
 
             navigation.navigate("ShowsVideoPlayer", {
               episodeId: episodeId,
               episodeLink: episodeLink,
               episodeName: episodeName,
+              episodeNumber: episodeNumber,
+              seasonNumber: season.season_number,
             });
             return;
           }
@@ -95,6 +99,8 @@ export default function ShowsScreen() {
           episodeId: firstEpisode._id,
           episodeLink: firstEpisode.downloadLink,
           episodeName: firstEpisode.name,
+          episodeNumber: firstEpisode.episode_number,
+          seasonNumber: show.seasons[0].season_number,
         });
       } else {
         Alert.alert("Error", "No episodes available for this show");

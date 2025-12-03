@@ -26,12 +26,14 @@ import VerticalSlider from "rn-vertical-slider-matyno";
 import * as Brightness from "expo-brightness";
 import DoubleTap from "../components/DoubleTap";
 import { getAllEpisodesList } from "../api/showsListAPI";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const ShowsVideoPlayer = ({ route }) => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
 
-  const { episodeLink, episodeId, episodeName } = route.params;
+  const { episodeLink, episodeId, episodeName, episodeNumber, seasonNumber } =
+    route.params;
 
   const [watchedTime, setWatchedTime] = useState(0);
   const [videoPressed, setVideoPressed] = useState(false);
@@ -132,7 +134,6 @@ const ShowsVideoPlayer = ({ route }) => {
   useEffect(() => {
     const episodesList = async () => {
       const episodes = await getAllEpisodesList(episodeId);
-
       setEpisodeList(episodes.seasonArray);
     };
 
@@ -269,7 +270,12 @@ const ShowsVideoPlayer = ({ route }) => {
     setEpisodeListVisible(false);
   };
 
-  const handleEpisodePlay = async (episodeId, episodeLink, episodeName) => {
+  const handleEpisodePlay = async (
+    episodeId,
+    episodeLink,
+    episodeName,
+    episodeNumber
+  ) => {
     closeEpisodeListModal();
 
     handleUpdateShowWatchTime();
@@ -278,6 +284,8 @@ const ShowsVideoPlayer = ({ route }) => {
       episodeId: episodeId,
       episodeLink: episodeLink,
       episodeName: episodeName,
+      episodeNumber: episodeNumber,
+      seasonNumber: seasonNumber,
     });
   };
 
@@ -313,9 +321,17 @@ const ShowsVideoPlayer = ({ route }) => {
                 }
                 renderItem={({ item }) => (
                   <TouchableOpacity
-                    style={styles.episodeItem}
+                    style={[
+                      styles.episodeItem,
+                      episodeId === item._id && { backgroundColor: "grey" },
+                    ]}
                     onPress={() =>
-                      handleEpisodePlay(item._id, item.downloadLink, item.name)
+                      handleEpisodePlay(
+                        item._id,
+                        item.downloadLink,
+                        item.name,
+                        item.episode_number
+                      )
                     }
                   >
                     <View style={styles.episodeContent}>
@@ -432,7 +448,9 @@ const ShowsVideoPlayer = ({ route }) => {
                 style={styles.goBackIcon}
               />
             </TouchableOpacity>
-            <Text style={styles.showTitleText}>{episodeName}</Text>
+            <Text style={styles.showTitleText}>
+              Season {seasonNumber} Episode {episodeNumber}: {episodeName}
+            </Text>
             {Platform.OS === "ios" && (
               <TouchableOpacity onPress={showAirPlayInfo}>
                 <Icon name="cast" size={35} color="white" />
@@ -458,7 +476,7 @@ const ShowsVideoPlayer = ({ route }) => {
               opacity: videoPressed ? 1 : 0,
             }}
           >
-            <Icon name="brightness-7" size={30} color="white" />
+            <Ionicons name="sunny" size={30} color="white" />
             <VerticalSlider
               onChange={handleBrightnessChange}
               value={brightnessLevel}

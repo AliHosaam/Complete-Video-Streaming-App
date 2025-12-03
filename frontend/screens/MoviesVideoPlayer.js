@@ -24,6 +24,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import VerticalSlider from "rn-vertical-slider-matyno";
 import * as Brightness from "expo-brightness";
 import DoubleTap from "../components/DoubleTap";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const MoviesVideoPlayer = ({ route }) => {
   const navigation = useNavigation();
@@ -365,7 +366,7 @@ const MoviesVideoPlayer = ({ route }) => {
               opacity: videoPressed ? 1 : 0,
             }}
           >
-            <Icon name="brightness-7" size={30} color="white" />
+            <Ionicons name="sunny" size={30} color="white" />
             <VerticalSlider
               onChange={handleBrightnessChange}
               value={brightnessLevel}

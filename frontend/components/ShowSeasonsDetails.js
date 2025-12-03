@@ -22,7 +22,12 @@ const ShowSeasonsDetails = ({ show }) => {
     return () => clearTimeout(timer);
   }, []);
 
-  const renderEpisodeItem = ({ item }) => <EpisodeItem episode={item} />;
+  const renderEpisodeItem = ({ item }) => (
+    <EpisodeItem
+      episode={item}
+      seasonNumber={show.seasons[selectedSeasonsIndex].season_number}
+    />
+  );
 
   const openSeasonSelector = () => {
     setIsModalAvailable(true);
