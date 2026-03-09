@@ -38,7 +38,7 @@ export default function HistoryScreen() {
       };
 
       fetchWatchedMovies();
-    }, [reload])
+    }, [reload]),
   );
 
   const handleWatchedMoviesDeleteButton = async (movieId) => {

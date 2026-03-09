@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "dev:all": "concurrently \"yarn run app\" \"yarn run start:server\"",
     "app": "nodemon app.js",
-    "start:server": "node start-server.js",
-    "dev": "concurrently \"npm run app\" \"npm run start:server\""
+    "start:server": "node start-server.js"
   },
   "license": "MIT",
   "dependencies": {

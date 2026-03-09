@@ -56,7 +56,7 @@ app.use(
         maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
       },
     }),
-  })
+  }),
 );
 app.use(passport.initialize());
 app.use(passport.session());
@@ -87,7 +87,7 @@ app.use(express.json());
 app.use(cors());
 
 app.listen(port, (req, res) => {
-  console.log(`Your server running on port...: ${port}`);
+  console.log(`Your server running on port...: http://localhost:${port}`);
 });
 
 mongoose.set("strictQuery", true);
@@ -96,6 +96,8 @@ mongoose
   .connect(url, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000,
   })
   .then(() => console.log("MongoDB Connection Established"))
   .catch((error) => console.log("MongoDB Connection Failed: ", error.message));

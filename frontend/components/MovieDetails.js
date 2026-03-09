@@ -144,7 +144,7 @@ export default function MovieDetails({ movie, handleVideoPlayer }) {
           {/* Back Button */}
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => navigation.popToTop()}
+            onPress={() => navigation.goBack()}
           >
             <Ionicons name="arrow-back" size={24} color="#fff" />
           </TouchableOpacity>
@@ -161,7 +161,7 @@ export default function MovieDetails({ movie, handleVideoPlayer }) {
                     handleVideoPlayer(
                       movie.downloadLink,
                       movie._id,
-                      movie.originalTitle
+                      movie.originalTitle,
                     )
                   }
                   activeOpacity={0.8}

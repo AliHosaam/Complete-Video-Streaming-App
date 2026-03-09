@@ -11,6 +11,8 @@ import ShowsTabNavigator from "./ShowsTabNav";
 import ShowsDetailsScreen from "../screens/ShowsDetailsScreen";
 import ShowsVideoPlayer from "../screens/ShowsVideoPlayer";
 import ShowsHistoryScreen from "../screens/ShowsHistoryScreen";
+import MoviesGenreDetailsScreen from "../screens/MoviesGenreDetailsScreen";
+import ShowsGenreDetailsScreen from "../screens/ShowsGenreDetailsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -43,6 +45,14 @@ export default function AppNavigation() {
         <Stack.Screen
           name="MoviesDetailsScreen"
           component={MoviesDetailsScreen}
+        />
+        <Stack.Screen
+          name="MoviesGenreDetailsScreen"
+          component={MoviesGenreDetailsScreen}
+        />
+        <Stack.Screen
+          name="ShowsGenreDetailsScreen"
+          component={ShowsGenreDetailsScreen}
         />
         <Stack.Screen name="HistoryScreen" component={HistoryScreen} />
         <Stack.Screen

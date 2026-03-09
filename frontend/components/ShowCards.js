@@ -8,8 +8,11 @@ import {
 } from "react-native";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 import { Skeleton } from "moti/skeleton";
+import { useNavigation } from "@react-navigation/native";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const ShowCards = ({ genre, showsList, handleBanner, isLoading }) => {
+  const navigation = useNavigation();
   const filteredShows = showsList.filter((show) => show.genres.includes(genre));
 
   const shuffleArray = (array) => {
@@ -21,6 +24,13 @@ const ShowCards = ({ genre, showsList, handleBanner, isLoading }) => {
   };
 
   const shuffledFilteredShows = shuffleArray(filteredShows);
+
+  const handleGenreDetails = () => {
+    navigation.navigate("ShowsGenreDetailsScreen", {
+      shuffledFilteredShows: shuffledFilteredShows,
+      genre: genre,
+    });
+  };
 
   const renderShowCard = ({ item }) => {
     return (
@@ -65,7 +75,12 @@ const ShowCards = ({ genre, showsList, handleBanner, isLoading }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{genre} TV Shows</Text>
+      <View style={styles.labelContainer}>
+        <Text style={styles.label}>{genre} TV Shows</Text>
+        <TouchableOpacity onPress={handleGenreDetails}>
+          <Ionicons name="arrow-forward" color="white" size={30} />
+        </TouchableOpacity>
+      </View>
 
       <FlatList
         data={shuffledFilteredShows.slice(0, 10)}
@@ -85,6 +100,11 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 10,
     height: 280,
+  },
+  labelContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginRight: 5,
   },
   label: {
     color: "white",

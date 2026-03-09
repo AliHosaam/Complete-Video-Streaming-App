@@ -10,8 +10,12 @@ import { useState, useEffect } from "react";
 import { moviesListAPI } from "../api/moviesListAPI";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 import { Skeleton } from "moti/skeleton";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { useNavigation } from "@react-navigation/native";
 
 export default function MovieCards({ genreID, label, handleBanner }) {
+  const navigation = useNavigation();
+
   const [moviesList, setMoviesList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -34,6 +38,13 @@ export default function MovieCards({ genreID, label, handleBanner }) {
   };
 
   const shuffledMoviesList = shuffleArray(moviesList);
+
+  const handleGenreDetails = () => {
+    navigation.navigate("MoviesGenreDetailsScreen", {
+      shuffledMoviesList: shuffledMoviesList,
+      label: label,
+    });
+  };
 
   const renderMovieCard = ({ item }) => {
     return (
@@ -81,7 +92,12 @@ export default function MovieCards({ genreID, label, handleBanner }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
+      <View style={styles.labelContainer}>
+        <Text style={styles.label}>{label}</Text>
+        <TouchableOpacity onPress={handleGenreDetails}>
+          <Ionicons name="arrow-forward" color="white" size={30} />
+        </TouchableOpacity>
+      </View>
 
       <FlatList
         data={shuffledMoviesList.slice(0, 10)}
@@ -99,6 +115,11 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 10,
     height: 280,
+  },
+  labelContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginRight: 5,
   },
   label: {
     color: "white",
