@@ -87,6 +87,7 @@ Techs Used:
 * @react-navigation/native-stack: ^7.3.11
 * expo: ~54.0.25
 * expo-brightness: ^14.0.7
+* expo-haptics: ^15.0.8
 * expo-linear-gradient: ~15.0.7
 * expo-navigation-bar: ~5.0.9
 * expo-screen-orientation: ~9.0.7
